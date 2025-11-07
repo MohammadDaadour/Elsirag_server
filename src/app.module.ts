@@ -33,11 +33,11 @@ import { PaymentModule } from './payment/payment.module';
     // 2. Replace your entire MailerModule.forRootAsync with this:
     MailerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService): MailerOptions => { 
+      useFactory: (configService: ConfigService): MailerOptions => {
         return {
           transport: {
             host: configService.get<string>('MAIL_HOST')!,
-            port: +(configService.get<string>('MAIL_PORT') ?? 587), 
+            port: +(configService.get<string>('MAIL_PORT') ?? 587),
             secure: false,
             auth: {
               user: configService.get<string>('MAIL_USER')!,
@@ -62,9 +62,17 @@ import { PaymentModule } from './payment/payment.module';
         type: 'postgres' as const,
         url: configService.get<string>('DATABASE_URL'),
         ssl: { rejectUnauthorized: false },
-        extra: { max: 10, idleTimeoutMillis: 30000 },
+        extra: {
+          max: 1, // ⚠️ CRITICAL: Only 1 connection per serverless function
+          min: 0,
+          connectionTimeoutMillis: 10000,
+          idleTimeoutMillis: 30000,
+        },
         autoLoadEntities: true,
         synchronize: false,
+        keepConnectionAlive: false, // ⚠️ CRITICAL: Don't persist connections
+        retryAttempts: 2,
+        retryDelay: 3000,
       }),
     }),
 
