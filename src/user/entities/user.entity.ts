@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typ
 import { Cart } from '../../cart/entities/cart.entity';
 import { Order } from '../../order/entities/order.entity';
 import { Favourite } from '../../favourite/entities/favourite.entity';
-import { Verification } from 'src/auth/entities/verification.entity';
+import { Verification } from '../../auth/entities/verification.entity';
 
 @Entity()
 export class User {
