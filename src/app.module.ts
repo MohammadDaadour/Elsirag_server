@@ -69,7 +69,7 @@ import { PaymentModule } from './payment/payment.module';
           idleTimeoutMillis: 30000,
         },
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true,
         keepConnectionAlive: false, // ⚠️ CRITICAL: Don't persist connections
         retryAttempts: 2,
         retryDelay: 3000,
