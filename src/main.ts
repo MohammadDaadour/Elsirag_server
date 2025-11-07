@@ -54,20 +54,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
 import { Logger } from '@nestjs/common';
 
-const server = express();
-
-async function createNestApp(expressInstance: express.Express) {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressInstance),
-    {
-      logger: ['error', 'warn', 'log'],
-    }
-  );
+async function bootstrap() {
+  Logger.overrideLogger(['log', 'error', 'warn', 'debug', 'verbose']);
+  const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
 
@@ -78,8 +69,6 @@ async function createNestApp(expressInstance: express.Express) {
       'https://elsirag.com'
     ],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   app.useGlobalPipes(
@@ -90,29 +79,19 @@ async function createNestApp(expressInstance: express.Express) {
     }),
   );
 
-  await app.init();
-  return app;
-}
-
-// For Vercel serverless
-let nestApp: any;
-
-async function bootstrap() {
-  if (!nestApp) {
-    nestApp = await createNestApp(server);
-  }
-  return server;
-}
-
-// Export for Vercel
-module.exports = bootstrap().then(app => app);
-
-// For local development
-if (process.env.NODE_ENV !== 'production') {
   const port = process.env.PORT || 3200;
-  bootstrap().then(app => {
-    app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
-    });
-  });
+  
+  // For Vercel - export the app instance
+  if (process.env.VERCEL) {
+    await app.init();
+    const expressApp = app.getHttpAdapter().getInstance();
+    module.exports = expressApp;
+  } else {
+    // For local development
+    await app.listen(port);
+    console.log(`🚀 Server running on port ${port}`);
+  }
 }
+
+// Start the application
+bootstrap();
