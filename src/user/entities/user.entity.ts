@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
-import { Cart } from 'src/cart/entities/cart.entity';
-import { Order } from 'src/order/entities/order.entity';
-import { Favourite } from 'src/favourite/entities/favourite.entity';
+import { Cart } from '../../cart/entities/cart.entity';
+import { Order } from '../../order/entities/order.entity';
+import { Favourite } from '../../favourite/entities/favourite.entity';
 import { Verification } from 'src/auth/entities/verification.entity';
 
 @Entity()

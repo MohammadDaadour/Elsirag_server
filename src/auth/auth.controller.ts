@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Res, Req, Get, ConflictException, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginDto } from './dto/create-auth.dto';
 import { RequestVerificationDto, VerifyCodeDto, ForgotPasswordDto, ResetPasswordDto } from './dto/verification.dto';
 import { Public } from './decorators/public.decorator';
@@ -9,7 +9,7 @@ import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {

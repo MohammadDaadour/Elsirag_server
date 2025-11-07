@@ -10,15 +10,15 @@ import {
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
-import { OrderItem } from 'src/order-item/entities/order-item.entity';
-import { Cart } from 'src/cart/entities/cart.entity';
-import { CartItem } from 'src/cart-item/entities/cart-item.entity';
-import { Product } from 'src/product/entities/product.entity';
-import { User } from 'src/user/entities/user.entity';
+import { OrderItem } from '../order-item/entities/order-item.entity';
+import { Cart } from '../cart/entities/cart.entity';
+import { CartItem } from '../cart-item/entities/cart-item.entity';
+import { Product } from '../product/entities/product.entity';
+import { User } from '../user/entities/user.entity';
 import { UpdateOrderStatusDto } from './dto/update-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { plainToInstance } from 'class-transformer';
-import { PaymentService } from 'src/payment/payment.service';
+import { PaymentService } from '../payment/payment.service';
 
 @Injectable()
 export class OrderService {

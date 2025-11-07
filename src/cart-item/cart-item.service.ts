@@ -4,7 +4,6 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CartItem } from './entities/cart-item.entity';
-import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 

@@ -20,7 +20,6 @@ import { OrderItemModule } from './order-item/order-item.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FavoriteModule } from './favourite/favourite.module';
 import { PaymentModule } from './payment/payment.module';
-import { LinkModule } from './link/link.module';
 
 @Module({
   imports: [
@@ -80,7 +79,6 @@ import { LinkModule } from './link/link.module';
     CloudinaryModule,
     FavoriteModule,
     PaymentModule,
-    LinkModule,
   ],
   controllers: [AppController],
   providers: [

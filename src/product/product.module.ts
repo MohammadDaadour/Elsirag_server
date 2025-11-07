@@ -3,11 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
-import { CategoryModule } from 'src/category/category.module';
-import { Category } from 'src/category/entities/category.entity'; 
-import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { CategoryModule } from '../category/category.module';
+import { Category } from '../category/entities/category.entity'; 
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Variant } from './entities/variant.entity'; // new
 import { Attribute } from './entities/attribute.entity'; // new
 import { Option } from './entities/option.entity'; // new

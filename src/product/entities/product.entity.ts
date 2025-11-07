@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, Column, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
 import { Attribute } from './attribute.entity';
 import { Variant } from './variant.entity';
-import { Category } from 'src/category/entities/category.entity';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity()
 @Index('IDX_PRODUCT_NAME', ['name'])

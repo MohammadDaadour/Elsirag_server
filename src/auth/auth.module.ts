@@ -10,12 +10,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Verification } from './entities/verification.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { CartModule } from 'src/cart/cart.module';
-import { CartService } from 'src/cart/cart.service';
+import { CartModule } from '../cart/cart.module';
+import { CartService } from '../cart/cart.service';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { FacebookStrategy } from './strategy/facebook.strategy';
-import { LinkModule } from 'src/link/link.module';
-import { LinkService } from 'src/link/link.service';
 
 @Module({
   imports: [
@@ -30,7 +28,6 @@ import { LinkService } from 'src/link/link.service';
       }),
     }),
     UserModule,
-    LinkModule,
     TypeOrmModule.forFeature([Verification]), 
     MailerModule,
     forwardRef(() => CartModule)

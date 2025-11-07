@@ -15,7 +15,6 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { SearchQueryDto } from './dto/search-query.dto';
 import { GetVariantsQueryDto } from './dto/variant.dto';
-import { RolesGuard } from 'src/auth/guard/roles.guard';
 
 @Controller('products')
 export class ProductController {

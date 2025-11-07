@@ -2,12 +2,10 @@ import { Controller, Req, Get, Post, Body, Patch, Param, Delete, All, UseGuards,
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order.dto';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { PaymobWebhookGuard } from 'src/auth/guard/paymob-webhook.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
-import { PaymentService } from 'src/payment/payment.service';
-import { IncomingMessage } from 'http';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { Public } from '../auth/decorators/public.decorator';
+import { PaymentService } from '../payment/payment.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('orders')

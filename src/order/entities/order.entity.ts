@@ -6,7 +6,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 import { OrderItem } from '../../order-item/entities/order-item.entity';
 import { Expose } from 'class-transformer';
 

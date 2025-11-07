@@ -1,18 +1,17 @@
 import { Injectable, BadRequestException, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UserService } from '../user/user.service';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginDto } from './dto/create-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Verification, VerificationType, } from './entities/verification.entity';
 import { RequestVerificationDto, VerifyCodeDto, ForgotPasswordDto, ResetPasswordDto } from './dto/verification.dto';
-import { CartService } from 'src/cart/cart.service';
-import { GoogleProfile, FacebookProfile } from 'src/types/social-profile.interface';
-import { LinkService } from 'src/link/link.service';
-import { User } from 'src/user/entities/user.entity';
+import { CartService } from '../cart/cart.service';
+import { GoogleProfile, FacebookProfile } from '../types/social-profile.interface';
+import { User } from '../user/entities/user.entity';
 
 interface LinkData {
   token: string;
@@ -33,7 +32,6 @@ export class AuthService {
     private readonly verificationRepo: Repository<Verification>,
     private readonly mailerService: MailerService,
     private cartService: CartService,
-    private linkService: LinkService
   ) { }
 
 
@@ -255,15 +253,6 @@ export class AuthService {
     await this.verificationRepo.delete({ id: record.id });
 
     return { message: 'Password reset successfully' };
-  }
-
-  async generateLinkToken(userId: string, provider: string, socialId: string): Promise<string> {
-    return this.linkService.storeLinkData({
-      userId,
-      provider,
-      socialId,
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-    });
   }
 
   async handleSocialUser(profile: FacebookProfile | GoogleProfile, provider: string) {

@@ -1,7 +1,7 @@
 // src/favorite/entities/favorite.entity.ts
 import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { Product } from 'src/product/entities/product.entity';
+import { User } from '../../user/entities/user.entity';
+import { Product } from '../../product/entities/product.entity';
 
 @Entity()
 export class Favourite {
