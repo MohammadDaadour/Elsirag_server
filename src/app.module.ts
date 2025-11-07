@@ -61,7 +61,7 @@ import { PaymentModule } from './payment/payment.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres' as const,
         url: configService.get<string>('DATABASE_URL'),
-        ssl: { rejectUnauthorized: false },
+        ssl: false,
         extra: {
           max: 1, // ⚠️ CRITICAL: Only 1 connection per serverless function
           min: 0,
