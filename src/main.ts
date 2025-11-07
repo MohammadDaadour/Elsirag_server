@@ -7,8 +7,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 const server = express();
-
-let app;
+let app: any;
 
 declare module 'http' {
   interface IncomingMessage {
@@ -18,15 +17,15 @@ declare module 'http' {
 
 async function createApp() {
   if (!app) {
-    app = await NestFactory.create(
+    const nestApp = await NestFactory.create(
       AppModule,
       new ExpressAdapter(server),
       { logger: ['log', 'error', 'warn', 'debug', 'verbose'] }
     );
 
-    app.use(cookieParser());
+    nestApp.use(cookieParser());
 
-    app.enableCors({
+    nestApp.enableCors({
       origin: [
         process.env.FRONTEND_URL || 'http://localhost:3000',
         'https://www.elsirag.com',
@@ -35,7 +34,7 @@ async function createApp() {
       credentials: true,
     });
 
-    app.useGlobalPipes(
+    nestApp.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -43,7 +42,7 @@ async function createApp() {
       }),
     );
 
-    app.use(
+    nestApp.use(
       bodyParser.json({
         verify: (req, res, buf) => {
           req.rawBody = buf;
@@ -51,15 +50,20 @@ async function createApp() {
       }),
     );
 
-    await app.init();
+    await nestApp.init();
+
+    // Keep a reference to the underlying express instance
+    app = nestApp.getHttpAdapter().getInstance();
   }
+
   return app;
 }
 
-export default async (req, res) => {
-  await createApp();
-  server(req, res);
-};
+export default async function handler(req, res) {
+  const app = await createApp();
+  return app(req, res);
+}
+
 
 // import { NestFactory } from '@nestjs/core';
 // import { AppModule } from './app.module';
