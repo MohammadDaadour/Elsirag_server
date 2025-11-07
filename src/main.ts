@@ -1,12 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
-import bodyParser from 'body-parser';
+import * as express from 'express';
+import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
 
 const server = express();
+
 let app: any;
 
 declare module 'http' {
