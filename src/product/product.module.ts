@@ -7,15 +7,10 @@ import { CategoryModule } from '../category/category.module';
 import { Category } from '../category/entities/category.entity'; 
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { Variant } from './entities/variant.entity'; // new
-import { Attribute } from './entities/attribute.entity'; // new
-import { Option } from './entities/option.entity'; // new
-
-import { VariantsService } from './variants.service'; // new
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product, Category, Variant, Attribute, Option]), 
+    TypeOrmModule.forFeature([Product, Category]),
     CategoryModule, 
     CloudinaryModule,
     MulterModule.register({
@@ -26,6 +21,6 @@ import { VariantsService } from './variants.service'; // new
     }),
   ],
   controllers: [ProductController],
-  providers: [ProductService, VariantsService],
+  providers: [ProductService],
 })
 export class ProductModule { }

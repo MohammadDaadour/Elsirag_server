@@ -13,13 +13,7 @@ import { RolesGuard } from './auth/guard/roles.guard';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
-import { CartModule } from './cart/cart.module';
-import { CartItemModule } from './cart-item/cart-item.module';
-import { OrderModule } from './order/order.module';
-import { OrderItemModule } from './order-item/order-item.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { FavoriteModule } from './favourite/favourite.module';
-import { PaymentModule } from './payment/payment.module';
 
 @Module({
   imports: [
@@ -80,13 +74,7 @@ import { PaymentModule } from './payment/payment.module';
     AuthModule,
     ProductModule,
     CategoryModule,
-    CartModule,
-    CartItemModule,
-    OrderModule,
-    OrderItemModule,
     CloudinaryModule,
-    FavoriteModule,
-    PaymentModule,
   ],
   controllers: [AppController],
   providers: [

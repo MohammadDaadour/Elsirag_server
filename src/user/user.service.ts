@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -66,15 +66,25 @@ export class UserService {
     return this.userRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   async update(id: number, updateUserDto: Partial<User>) {
     return this.userRepo.save({ id, ...updateUserDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number, requesterId?: number) {
+    // Registration was removed with the shop, so a deleted admin cannot be
+    // recreated through the app. Refuse to let one delete themselves.
+    if (requesterId !== undefined && requesterId === id) {
+      throw new BadRequestException('You cannot delete your own account');
+    }
+
+    const user = await this.findOne(id);
+    await this.userRepo.remove(user);
+    return { id, message: 'User deleted' };
   }
 }

@@ -1,4 +1,8 @@
-import { Controller, Post, Get, Patch, Delete, Param, Body, ParseIntPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller, Post, Get, Patch, Delete, Param, Body, ParseIntPipe,
+  UseGuards, UseInterceptors, UploadedFile, BadRequestException,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -26,15 +30,35 @@ export class CategoryController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  create(@Body() dto: CreateCategoryDto) {
-    return this.categoryService.create(dto);
+  @UseInterceptors(FileInterceptor('image', {
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new BadRequestException('Only image files are allowed'), false);
+      }
+      cb(null, true);
+    },
+  }))
+  create(@Body() dto: CreateCategoryDto, @UploadedFile() image?: Express.Multer.File) {
+    return this.categoryService.create(dto, image);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateCategoryDto) {
-    return this.categoryService.update(id, dto);
+  @UseInterceptors(FileInterceptor('image', {
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new BadRequestException('Only image files are allowed'), false);
+      }
+      cb(null, true);
+    },
+  }))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateCategoryDto,
+    @UploadedFile() image?: Express.Multer.File,
+  ) {
+    return this.categoryService.update(id, dto, image);
   }
 
   @Delete(':id')

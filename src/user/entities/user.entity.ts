@@ -1,7 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from 'typeorm';
-import { Cart } from '../../cart/entities/cart.entity';
-import { Order } from '../../order/entities/order.entity';
-import { Favourite } from '../../favourite/entities/favourite.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Verification } from '../../auth/entities/verification.entity';
 
 @Entity()
@@ -23,24 +20,6 @@ export class User {
 
   @Column({ default: false })
   emailVerified: boolean;
-
-  @OneToMany(() => Favourite, (f) => f.user, {
-    cascade: true,
-    onDelete: 'CASCADE'
-  })
-  favourites: Favourite[];
-
-  @OneToOne(() => Cart, (cart) => cart.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
-  cart: Cart;
-
-  @OneToMany(() => Order, order => order.user, {
-    // cascade: true,
-    // onDelete: 'CASCADE'
-  })
-  orders: Order[];
 
   @OneToMany(() => Verification, verification => verification.user, {
     cascade: true,

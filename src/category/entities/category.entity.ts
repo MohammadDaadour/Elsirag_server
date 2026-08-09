@@ -16,6 +16,11 @@ export class Category {
     @Column({ nullable: true })
     description?: string;
 
+    // Tile image for the catalogue index. Nullable so existing categories stay
+    // valid until someone uploads one.
+    @Column({ type: 'json', nullable: true })
+    image?: { url: string; public_id: string } | null;
+
     @OneToMany(() => Product, product => product.category)
     products: Product[];
 }

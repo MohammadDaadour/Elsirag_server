@@ -8,10 +8,6 @@ import { ProductQueryDto, SortBy, SortOrder } from './dto/product-query.dto';
 import { PaginatedResponse, PaginationMeta } from './dto/product-query.dto';
 import { Category } from '../category/entities/category.entity';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { Variant } from './entities/variant.entity';
-import { Option } from './entities/option.entity';
-import { VariantsService } from './variants.service';
-import { Attribute } from './entities/attribute.entity';
 
 @Injectable()
 export class ProductService {
@@ -23,12 +19,7 @@ export class ProductService {
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
 
-    @InjectRepository(Attribute)
-    private readonly attributeRepo: Repository<Attribute>,
-
     private readonly cloudinaryService: CloudinaryService,
-
-    readonly variantsService: VariantsService
   ) { }
 
   async create(dto: CreateProductDto, files?: Express.Multer.File[]) {
@@ -78,8 +69,16 @@ export class ProductService {
     });
   }
 
-  findAll() {
-    return this.productRepo.find({ where: { isActive: true } });
+  /** The public catalogue: active products, filterable by category and search. */
+  async findAll(query: ProductQueryDto): Promise<PaginatedResponse<Product>> {
+    const queryBuilder = this.createQueryBuilder();
+
+    queryBuilder.where('product.isActive = true');
+
+    this.applyFilters(queryBuilder, query);
+    this.applySorting(queryBuilder, query);
+
+    return this.paginate(queryBuilder, query);
   }
 
   async getAllForAdmin(query: ProductQueryDto): Promise<PaginatedResponse<Product>> {
@@ -97,7 +96,6 @@ export class ProductService {
     } = query;
 
     const qb = this.productRepo.createQueryBuilder('product')
-      .leftJoinAndSelect('product.attributes', 'attributes')
       .leftJoinAndSelect('product.category', 'category');
 
     const columnMap = {
@@ -171,7 +169,7 @@ export class ProductService {
   }
 
   async findOne(id: number) {
-    const product = await this.productRepo.findOne({ where: { id }, relations: ['category', 'attributes', 'attributes.options', 'variants', 'variants.options', 'variants.options.attribute'] });
+    const product = await this.productRepo.findOne({ where: { id }, relations: ['category'] });
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }
@@ -225,7 +223,9 @@ export class ProductService {
   async findFeatured(query: ProductQueryDto): Promise<PaginatedResponse<Product>> {
     const queryBuilder = this.createQueryBuilder();
 
-    queryBuilder.where('product.stock > 0 AND product.isActive = true');
+    // Stock is not tracked on a catalogue, so filtering by it would silently
+    // hide any product left at zero.
+    queryBuilder.where('product.isActive = true');
 
     this.applyFilters(queryBuilder, query);
     this.applySorting(queryBuilder, query);
@@ -414,81 +414,5 @@ export class ProductService {
     };
 
     return { data, meta };
-  }
-
-
-  // here \\\\\\\\\\\\\\\\ >
-
-  // Assign attributes to product
-  async assignAttributesToProduct(productId: number, attributeIds: number[]) {
-    const product = await this.findOne(productId);
-
-    if (!product) {
-      throw new NotFoundException(`Product with ID ${productId} not found`);
-    }
-
-    const attributes = await this.attributeRepo.findByIds(attributeIds);
-
-    if (!attributes.length) {
-      throw new BadRequestException('No valid attributes found for the provided IDs');
-    }
-
-    product.attributes = attributes;
-
-    const savedProduct = await this.productRepo.save(product);
-
-
-    if (attributeIds.length > 0) {
-      await this.generateVariants(productId, { price: 0, stock: 0 });
-    }
-
-    return savedProduct;
-  }
-
-  // Add method to generate variants
-  async generateVariants(productId: number, defaults: { price?: number; stock?: number } = {}) {
-    const product = await this.findOne(productId);
-
-    if (!product.attributes || product.attributes.length === 0) {
-      throw new BadRequestException('Product has no attributes defined for variant generation');
-    }
-
-    const maxCombinations = 1000;
-
-    const optionCombos = this.getOptionCombinations(product.attributes);
-
-    if (optionCombos.length > maxCombinations) {
-      throw new BadRequestException('Too many variant combinations');
-    }
-
-    for (const combo of optionCombos) {
-      const sku = this.generateSKU(product.name, combo);
-
-      const existingVariant = await this.variantsService.findBySku(sku);
-      if (existingVariant) {
-        throw new BadRequestException(`Variant with SKU ${sku} already exists`);
-      }
-
-      const variant = await this.variantsService.create({
-        productId,
-        sku,
-        price: defaults.price ?? product.price,
-        stock: defaults.stock ?? 0,
-        options: combo.map(option => option.id),
-      });
-      await this.variantsService.save(variant);
-    }
-  }
-
-  private getOptionCombinations(attributes: Attribute[]): Option[][] {
-    return attributes.reduce((acc, attr) => {
-      const options = attr.options;
-      return acc.length ? acc.flatMap(c => options.map(o => [...c, o])) : options.map(o => [o]);
-    }, []);
-  }
-
-  private generateSKU(name: string, options: Option[]): string {
-    const optionValues = options.map(o => o.value).join('-');
-    return `${name.toUpperCase()}-${optionValues}`.replace(/\s+/g, '');
   }
 }

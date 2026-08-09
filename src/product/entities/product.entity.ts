@@ -1,6 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, Column, OneToMany, ManyToMany, JoinTable, ManyToOne } from 'typeorm';
-import { Attribute } from './attribute.entity';
-import { Variant } from './variant.entity';
+import { Entity, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, Column, ManyToOne } from 'typeorm';
 import { Category } from '../../category/entities/category.entity';
 
 @Entity()
@@ -44,13 +42,16 @@ export class Product {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @Column({ default: false })
-    isConfigurable: boolean;
+    // Units per carton, shown to trade buyers deciding on quantities.
+    @Column({ type: 'int', nullable: true })
+    packSize: number | null;
 
-    @OneToMany(() => Variant, variant => variant.product)
-    variants: Variant[];
+    // Free-form spec rows so a pen and a notebook can describe themselves
+    // differently without a schema change per product type.
+    @Column({ type: 'json', nullable: true })
+    specs: { label: string; value: string }[] | null;
 
-    @ManyToMany(() => Attribute, attribute => attribute.products)
-    @JoinTable()
-    attributes: Attribute[];
+    // Sheet-count price list, e.g. [{ label: '60 sheets', price: 45 }].
+    @Column({ type: 'json', nullable: true })
+    priceOptions: { label: string; price: number }[] | null;
 }

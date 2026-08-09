@@ -66,6 +66,24 @@ export default async function handler(req, res) {
   return app(req, res);
 }
 
+// On Vercel the platform invokes `handler` directly and nothing should bind a
+// port. Running `nest start` locally needs a listener, so start one only when
+// not on Vercel.
+if (!process.env.VERCEL) {
+  const port = process.env.PORT ?? 3200;
+
+  createApp()
+    .then(() => {
+      server.listen(port, () => {
+        console.log(`API listening on http://localhost:${port}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Failed to start the API:', err);
+      process.exit(1);
+    });
+}
+
 
 // import { NestFactory } from '@nestjs/core';
 // import { AppModule } from './app.module';

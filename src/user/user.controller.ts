@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -31,7 +31,9 @@ export class UserController {
 
   @Delete(':id')
   @Roles('admin')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    // The requester is passed through so the "cannot delete yourself" rule is
+    // enforced on the server, not just hidden in the admin UI.
+    return this.userService.remove(+id, req.user?.id);
   }
 }

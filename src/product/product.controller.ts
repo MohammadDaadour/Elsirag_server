@@ -14,7 +14,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { SearchQueryDto } from './dto/search-query.dto';
-import { GetVariantsQueryDto } from './dto/variant.dto';
 
 @Controller('products')
 export class ProductController {
@@ -36,8 +35,8 @@ export class ProductController {
 
   @Get()
   @Public()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@Query() query: ProductQueryDto) {
+    return this.productService.findAll(query);
   }
 
   @Get('search')
@@ -83,12 +82,6 @@ export class ProductController {
     return this.productService.getAllForAdmin(query);
   }
 
-  @Get('/attributes')
-  @Public()
-  async getAllAtt() {
-    return this.productService.variantsService.findAllAtt();
-  }
-
   @Get(':id')
   @Public()
   findOne(@Param('id') id: string) {
@@ -123,51 +116,5 @@ export class ProductController {
   @Roles('admin')
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
-  }
-
-
-  @Post('attributes')
-  createAttribute(@Body() createAttributeDto: any) {
-    return this.productService.variantsService.createAttributeWithOptions(createAttributeDto);
-  }
-
-  @Post(':id/attributes')
-  @Roles('admin')
-  assignAttributes(
-    @Param('id') id: string,
-    @Body() { attributes }: { attributes: number[] }
-  ) {
-    return this.productService.assignAttributesToProduct(+id, attributes);
-  }
-
-  @Post(':id/variants')
-  async createVariant(@Param('id') id: string, @Body() createVariantDto: any) {
-    if (createVariantDto.generate) {
-      await this.productService.generateVariants(+id, { price: createVariantDto.price, stock: createVariantDto.stock });
-      return { message: 'Variants generated' };
-    }
-    const variant = await this.productService.variantsService.create({ productId: +id, ...createVariantDto });
-    return variant;
-  }
-
-  @Get('/variants')
-  @Roles("admin")
-  async findAllVariants(@Query() query: GetVariantsQueryDto) {
-    return this.productService.variantsService.findAllForAdmin(query);
-  }
-
-  @Patch('variants/:id')
-  async updateVariant(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateVariantDto: any,
-  ) {
-    await this.productService.variantsService.update({
-      variantId: id,
-      ...updateVariantDto,
-    });
-    
-    return {
-      message: 'Variant updated successfully',
-    };
   }
 }

@@ -10,10 +10,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Verification } from './entities/verification.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { CartModule } from '../cart/cart.module';
-import { CartService } from '../cart/cart.service';
-import { GoogleStrategy } from './strategy/google.strategy';
-import { FacebookStrategy } from './strategy/facebook.strategy';
 
 @Module({
   imports: [
@@ -28,13 +24,11 @@ import { FacebookStrategy } from './strategy/facebook.strategy';
       }),
     }),
     UserModule,
-    TypeOrmModule.forFeature([Verification]), 
+    TypeOrmModule.forFeature([Verification]),
     MailerModule,
-    forwardRef(() => CartModule)
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, CartService, FacebookStrategy,
-    GoogleStrategy],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard],
 
   exports: [JwtModule, JwtAuthGuard],
 
