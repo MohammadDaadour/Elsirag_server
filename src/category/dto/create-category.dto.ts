@@ -13,4 +13,14 @@ export class CreateCategoryDto {
   @IsString()
   @Length(0, 200, { message: 'Description must be less than 200 characters.' })
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 50)
+  nameAr?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(0, 200)
+  descriptionAr?: string;
 }

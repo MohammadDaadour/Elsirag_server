@@ -34,6 +34,10 @@ export class ProductPriceOptionDto {
   @IsNotEmpty()
   label: string;
 
+  @IsOptional()
+  @IsString()
+  labelAr?: string;
+
   @Type(() => Number)
   @IsNumber()
   @Min(0)
@@ -47,6 +51,14 @@ export class CreateProductDto {
 
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsString()
+  nameAr?: string;
+
+  @IsOptional()
+  @IsString()
+  descriptionAr?: string;
 
   @Type(() => Number)
   @IsNumber()

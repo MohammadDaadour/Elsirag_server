@@ -340,7 +340,7 @@ export class ProductService {
     if (searchTerm) {
       const sanitizedSearch = searchTerm.replace(/[%_]/g, '\\$&');
       queryBuilder.andWhere(
-        '(product.name ILIKE :search OR product.description ILIKE :search)',
+        '(product.name ILIKE :search OR product.description ILIKE :search OR product."nameAr" ILIKE :search OR product."descriptionAr" ILIKE :search)',
         { search: `%${sanitizedSearch}%` }
       );
     }

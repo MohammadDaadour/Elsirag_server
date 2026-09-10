@@ -21,6 +21,13 @@ export class Product {
     @Column('text')
     description: string;
 
+    // Arabic versions; the Arabic site falls back to English when empty.
+    @Column({ type: 'varchar', nullable: true })
+    nameAr?: string | null;
+
+    @Column({ type: 'text', nullable: true })
+    descriptionAr?: string | null;
+
     @Column({ type: 'numeric', nullable: true })
     price: number;
 
@@ -53,5 +60,5 @@ export class Product {
 
     // Sheet-count price list, e.g. [{ label: '60 sheets', price: 45 }].
     @Column({ type: 'json', nullable: true })
-    priceOptions: { label: string; price: number }[] | null;
+    priceOptions: { label: string; labelAr?: string | null; price: number }[] | null;
 }
