@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, HttpException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder, In } from 'typeorm';
 import { Product } from './entities/product.entity';
@@ -8,6 +8,15 @@ import { ProductQueryDto, SortBy, SortOrder } from './dto/product-query.dto';
 import { PaginatedResponse, PaginationMeta } from './dto/product-query.dto';
 import { Category } from '../category/entities/category.entity';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+
+// Keep the real reason (e.g. an image upload rejected by Cloudinary) so the
+// admin sees it instead of a bare "failed"; HTTP errors already carry theirs.
+function describeFailure(prefix: string, error: unknown): string {
+  if (error instanceof HttpException) return error.message;
+  // Cloudinary throws plain strings for missing config, so accept those too.
+  const reason = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+  return reason ? `${prefix}: ${reason}` : prefix;
+}
 
 @Injectable()
 export class ProductService {
@@ -64,7 +73,7 @@ export class ProductService {
             )
           );
         }
-        throw new BadRequestException('Failed to create product');
+        throw new BadRequestException(describeFailure('Failed to create product', error));
       }
     });
   }
@@ -293,7 +302,7 @@ export class ProductService {
             )
           );
         }
-        throw new BadRequestException('Failed to update images');
+        throw new BadRequestException(describeFailure('Failed to update images', error));
       }
     });
   }
