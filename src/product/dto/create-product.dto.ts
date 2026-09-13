@@ -26,10 +26,12 @@ const parseJsonArray =
     }
   };
 
-// Empty multipart fields come through as "", which @Type(() => Number) would
-// turn into 0. Treat them as "not provided" instead.
-const emptyToUndefined = ({ value }: { value: unknown }) =>
-  typeof value === 'string' && value.trim() === '' ? undefined : value;
+// Empty multipart fields come through as "", which @Type(() => Number) turns
+// into 0 before this runs, so look at the raw field on the source object.
+const emptyToUndefined = ({ value, obj, key }: { value: unknown; obj: Record<string, unknown>; key: string }) => {
+  const raw = obj?.[key];
+  return typeof raw === 'string' && raw.trim() === '' ? undefined : value;
+};
 
 class ProductImage {
   @IsString()
@@ -81,10 +83,13 @@ export class CreateProductDto {
   @IsString()
   descriptionAr?: string;
 
+  // Optional: a product priced only by sheet count has no base price.
+  @IsOptional()
+  @Transform(emptyToUndefined)
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
-  price: number;
+  price?: number;
 
   @ValidateNested({ each: true })
   @Type(() => ProductImage)
